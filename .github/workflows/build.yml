@@ -1,0 +1,77 @@
+name: Supa-backup
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      supabase_db_url: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - name: repo
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: execute python script
+        env:
+          KEYS: ${{secrets.KEYS}}
+          NEXT_PUBLIC_SUPABASE_URL: ${{secrets.NEXT_PUBLIC_SUPABASE_URL}}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY}}
+        run: |
+          echo "$KEYS" > ./keys.json
+          python3 main.py
+
+# jobs:
+#   run_db_backup:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: write
+#     env:
+#       supabase_db_url: ${{ secrets.SUPABASE_DB_URL }} # For example: postgresql://postgres:[YOUR-PASSWORD]@db.<ref>.supabase.co:5432/postgres
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           ref: ${{ github.head_ref }}
+#       - uses: supabase/setup-cli@v1
+#         with:
+#           version: latest
+#       - name: Backup roles
+#         run: supabase db dump --db-url "$supabase_db_url" -f roles.sql --role-only
+#       - name: Backup schema
+#         run: supabase db dump --db-url "$supabase_db_url" -f schema.sql
+#       - name: Backup data
+#         run: supabase db dump --db-url "$supabase_db_url" -f data.sql --data-only --use-copy
+#       - name: Run Python Script
+#         uses: actions/setup-python@v2
+#         with:
+#           python-version: "3.11"
+#           cache: "pip"
+#           cache-dependency-path: requirements.txt
+#       - name: Install dependencies
+#         run: |
+#           pip install -r requirements.txt
+#       - name: execute python script
+#         env:
+#           KEYS: ${{secrets.KEYS}}
+#           CONNECTION_STRING: ${{secrets.SUPABASE_DB_URL}}
+#         run: |
+#           echo "$KEYS" > ./keys.json
+#           python main.py
+
+#       - uses: stefanzweifel/git-auto-commit-action@v4
+#         with:
+#           commit_message: Supabase backup
