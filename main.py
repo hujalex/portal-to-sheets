@@ -49,6 +49,8 @@ if __name__ == "__main__":
     pipeline("Profiles")
     pipeline("Enrollments")
     pipeline("Sessions")
+    pipeline("User_Notification_Settings")
+    pipeline("Meetings")
 
 
 
