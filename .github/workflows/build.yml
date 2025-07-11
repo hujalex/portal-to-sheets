@@ -12,8 +12,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      supabase_db_url: ${{ secrets.SUPABASE_DB_URL }}
     steps:
       - name: repo
         uses: actions/checkout@v2
