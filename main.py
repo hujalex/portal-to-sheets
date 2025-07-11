@@ -8,11 +8,12 @@ load_dotenv()
 
 pd.set_option('display.max_columns', None)
 
+GOOGLE_SHEET_URL = os.getenv("GOOGLE_SHEET_URL")
 URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
 KEY = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
 supabase: client = create_client(URL, KEY)
 gc = gspread.service_account(filename = "./keys.json")
-SHEET = gc.open_by_url("https://docs.google.com/spreadsheets/d/1dTfqrpS_dnNqm2KJ1adsOGZHJ6PHxHIEdB6iNSKoKas/edit?gid=0#gid=0")
+SHEET = gc.open_by_url(GOOGLE_SHEET_URL)
 
 
 def query(table: str) -> dict:
